@@ -21,7 +21,18 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'profile_photo'
     ];
+    public $appends = [
+        'profile_image_url',
+    ];
+    public function getProfileImageUrlAttribute(){
+        if($this->profile_photo){
+            return asset('/upload/profile_images/'.$this->profile_photo);
+        }else{
+            return 'https://ui-avatars.com/api/?background=random&name='.urlencode($this->name);
+        } 
+    }
 
     /**
      * The attributes that should be hidden for serialization.
