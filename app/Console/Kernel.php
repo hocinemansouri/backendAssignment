@@ -2,8 +2,12 @@
 
 namespace App\Console;
 
+use App\Models\Comment;
+use App\Models\Post;
+use Carbon\Carbon;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
+use Illuminate\Support\Facades\DB;
 
 class Kernel extends ConsoleKernel
 {
@@ -12,9 +16,19 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule): void
     {
-        // $schedule->command('inspire')->hourly();
+        $schedule->call(function () {
+            $posts = Post::where('created_at', '<', Carbon::now()->subHours(3)->toDateTimeString())->get();
+            foreach ($posts as $post) {
+                $post->delete();
+            }
+            $comments = Comment::where('created_at', '<', Carbon::now()->subHours(3)->toDateTimeString())->get();
+            foreach ($comments as $comment) {
+                $comment->delete();
+            }
+        })->everyThreeHours();
+    
     }
-
+ 
     /**
      * Register the commands for the application.
      */

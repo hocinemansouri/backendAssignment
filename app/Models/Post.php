@@ -5,11 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Models\Category;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Prunable;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Post extends Model
 {
-    use HasFactory,SoftDeletes;
+    use HasFactory, SoftDeletes;
     protected $fillable = [
         'title',
         'description',
@@ -22,6 +23,8 @@ class Post extends Model
         'image_url',
         'human_readable_created_at'
     ];
+
+
     public function user(){
         return $this->belongsTo(User::class);
     }

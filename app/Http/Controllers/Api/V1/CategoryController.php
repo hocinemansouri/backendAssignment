@@ -10,9 +10,9 @@ use Illuminate\Support\Facades\Validator;
 class CategoryController extends Controller
 {
     public function create(Request $request){
+        
         $validator = Validator::make($request->all(),[
             'name' => 'required|unique:categories|max:64',
-
         ]);
 
         if($validator->fails()){
