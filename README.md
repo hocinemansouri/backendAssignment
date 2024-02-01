@@ -27,4 +27,4 @@ Make sure you have the following installed:
 1. **Clone the repository:**
 
    ```bash
-   https://github.com/hocinemansouri/backendAssignment.git
+   git clone https://github.com/hocinemansouri/backendAssignment.git
