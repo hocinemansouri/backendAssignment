@@ -63,7 +63,7 @@ class CommentController extends Controller
     public function update(Request $request, $comment_id){
         $comment = Comment::with(['user'])->where('id',$comment_id)->first();
         if($comment){
-            if($comment->user_id==$request->user()->id){
+            if($comment->user_id==$request->user()->id || $request->user()->role == 'admin'){
                 $validator = Validator::make($request->all(),[
                     'content'=>'required'
                 ]);
@@ -82,7 +82,7 @@ class CommentController extends Controller
 
             }else{
                 return response()->json([
-                    'message'=>'Access denied',
+                    'message'=>'Unauthorized access',
                 ],403);
             }
         }else{
@@ -95,7 +95,7 @@ class CommentController extends Controller
     public function delete(Request $request, $comment_id){
         $comment=Comment::where('id',$comment_id)->first();
         if($comment){
-            if($comment->user_id==$request->user()->id){
+            if($comment->user_id==$request->user()->id || $request->user()->role == 'admin'){
                 $comment->delete();
                 return response()->json([
                     'message'=>'Comment succesfully deleted',
@@ -103,7 +103,7 @@ class CommentController extends Controller
                 ],200);
             }else{
                 return response()->json([
-                    'message'=>'Access denied'
+                    'message'=>'Unauthorized access'
                 ],403);
             }
         }else{
@@ -112,4 +112,45 @@ class CommentController extends Controller
             ],400);
         }
     }
+
+    public function restoreComment(Request $request,$id){
+        if ($request->user()->role == 'admin') {
+            $comment = Comment::withTrashed()->find($id);
+            if($comment){
+            $comment->restore();
+            return response()->json([
+                'message' => 'Comment are successfully restored'
+            ], 200);
+            }else{
+                return response()->json([
+                    'message' => 'Comment not found'
+                ], 400);
+            }
+        }else{
+            return response()->json([
+                'message' => 'Unauthorized access'
+            ], 403);
+        }
+    }
+
+    public function deletedComments (Request $request) {
+        if ($request->user()->role == 'admin') {
+            $trashedComments = Comment::onlyTrashed()->get();
+            if($trashedComments){
+                return response()->json([
+                    'message' => 'trashed Comments are successfully fetched',
+                    'data' => $trashedComments
+                ], 200);
+            }else{
+                return response()->json([
+                    'message' => 'trashed Comments not found'
+                ], 400);
+            }
+        }else{
+            return response()->json([
+                'message' => 'Unauthorized access'
+            ], 403);
+        }
+    }
+
 }
