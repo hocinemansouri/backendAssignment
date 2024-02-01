@@ -22,11 +22,11 @@ class DatabaseSeeder extends Seeder
         
         
         \App\Models\User::factory()
-        ->count(1000)
+        ->count(10)
         ->create();
 
         \App\Models\Post::factory()
-        ->count(1000)
+        ->count(100)
         ->hasComments(50)
         ->create();
 

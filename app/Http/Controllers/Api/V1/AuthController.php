@@ -6,18 +6,26 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use App\Models\User;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Laravel\Sanctum\HasApiTokens;
+
 class AuthController extends Controller
 {
     public function register(Request $request){
         
         $validator = Validator::make($request->all(),[
             'name' => 'required|min:2|max:100',
+            'surname' => 'required',
+            'nickname' => 'required',
+            'role' => 'required',
             'email' => 'required|email|unique:users',
             'password' => 'required|min:6|max:100',
-            'confirm_password' => 'required|same:password'
+            'confirm_password' => 'required|same:password',
+            'phone' => 'required',
+            'address' => 'required',
+            'city' => 'required',
+            'state' => 'required',
+            'zip_code' => 'required',
+            
         ]);
         if ($validator->fails()){
             return response()->json([
@@ -25,10 +33,23 @@ class AuthController extends Controller
                 'error' => $validator->errors(),
             ],422);
         }
+        $fname = $request->name;
+        $lname = $request->surname;
+        $username = strtolower($lname.(substr($fname,0,3)));
         $user = User::create([
-            'name'=>$request->name,
+            'name'=>$fname,
+            'surname' => $lname,
+            'username'=>$username,
+            'nickname' => $request->nickname,
+            'role' => $request->role,
             'email'=>$request->email,
-            'password'=>Hash::make($request->password)
+            'password'=>Hash::make($request->password),
+            'phone' => $request->phone,
+            'address' => $request->address,
+            'city' => $request->city,
+            'state' => $request->state,
+            'zip_code' => $request->zip_code,
+            
         ]);
 
         return response()->json([
