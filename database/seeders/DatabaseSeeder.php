@@ -19,21 +19,15 @@ class DatabaseSeeder extends Seeder
     {
         $this->call(UserSeeder::class);
         Category::factory(5)->create();
-        
-        
+
+
         \App\Models\User::factory()
-        ->count(10)
-        ->create();
+            ->count(10)
+            ->create();
 
         \App\Models\Post::factory()
-        ->count(100)
-        ->hasComments(50)
-        ->create();
-
-
-        // \App\Models\User::factory()->create([
-        //     'name' => 'Test User',
-        //     'email' => 'test@example.com',
-        // ]);
+            ->count(100)
+            ->hasComments(50)
+            ->create();
     }
 }

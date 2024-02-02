@@ -17,7 +17,7 @@ class CategoryFactory extends Factory
     public function definition(): array
     {
         return [
-            'name'=>fake()->randomElements(['Sport','Finance',' Technology','Politics','Divers'])[0],
+            'name' => fake()->randomElements(['Sport', 'Finance', ' Technology', 'Politics', 'Divers'])[0],
         ];
     }
 }

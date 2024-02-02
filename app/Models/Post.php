@@ -25,26 +25,32 @@ class Post extends Model
     ];
 
 
-    public function user(){
+    public function user()
+    {
         return $this->belongsTo(User::class);
     }
 
-    public function category(){
+    public function category()
+    {
         return $this->belongsTo(Category::class);
     }
 
-    public function comments(){
+    public function comments()
+    {
         return $this->hasMany(Comment::class);
     }
 
-    public function likes(){
+    public function likes()
+    {
         return $this->hasMany(PostLike::class);
     }
-    
-    public function getImageUrlAttribute(){
-        return asset('/upload/blog_images/'.$this->image);
+
+    public function getImageUrlAttribute()
+    {
+        return asset('/upload/blog_images/' . $this->image);
     }
-    public function getHumanReadableCreatedAtAttribute(){
+    public function getHumanReadableCreatedAtAttribute()
+    {
         return $this->created_at->diffForHumans();
     }
 }

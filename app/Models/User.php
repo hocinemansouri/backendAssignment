@@ -31,20 +31,22 @@ class User extends Authenticatable
         'city',
         'state',
         'zip_code',
-            
+
     ];
     public $appends = [
         'profile_image_url',
     ];
-    public function getProfileImageUrlAttribute(){
-        if($this->profile_photo){
-            return asset('/upload/profile_images/'.$this->profile_photo);
-        }else{
-            return 'https://ui-avatars.com/api/?background=random&name='.urlencode($this->name);
-        } 
+    public function getProfileImageUrlAttribute()
+    {
+        if ($this->profile_photo) {
+            return asset('/upload/profile_images/' . $this->profile_photo);
+        } else {
+            return 'https://ui-avatars.com/api/?background=random&name=' . urlencode($this->name);
+        }
     }
 
-    public function posts(){
+    public function posts()
+    {
         return $this->hasMany(Post::class);
     }
 

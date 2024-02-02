@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Comment extends Model
 {
-    use HasFactory,SoftDeletes;
+    use HasFactory, SoftDeletes;
     protected $fillable = [
         'content',
         'post_id',
@@ -19,16 +19,18 @@ class Comment extends Model
         'human_readable_created_at'
     ];
 
-    public function post(){
+    public function post()
+    {
         return $this->belongsTo(Post::class);
     }
 
-    public function user(){
+    public function user()
+    {
         return $this->belongsTo(User::class);
     }
 
-    public function getHumanReadableCreatedAtAttribute(){
+    public function getHumanReadableCreatedAtAttribute()
+    {
         return $this->created_at->diffForHumans();
     }
-
 }

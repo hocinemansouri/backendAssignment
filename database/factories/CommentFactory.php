@@ -21,9 +21,9 @@ class CommentFactory extends Factory
         $users = User::pluck('id')->toArray();
         $posts = Post::pluck('id')->toArray();
         return [
-            'content'=>fake()->text(255),
-            'user_id'=>fake()->randomElement($users),
-            'post_id'=>fake()->randomElement($posts),
+            'content' => fake()->text(255),
+            'user_id' => fake()->randomElement($users),
+            'post_id' => fake()->randomElement($posts),
         ];
     }
 }

@@ -21,8 +21,8 @@ class PostLikeFactory extends Factory
         $users = User::pluck('id')->toArray();
         $posts = Post::pluck('id')->toArray();
         return [
-            'user_id'=>fake()->randomElement($users),
-            'post_id'=>fake()->randomElement($posts),
+            'user_id' => fake()->randomElement($users),
+            'post_id' => fake()->randomElement($posts),
         ];
     }
 }

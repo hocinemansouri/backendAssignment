@@ -18,16 +18,16 @@ class PostFactory extends Factory
      */
     public function definition(): array
     {
-        $users = User::where('role','moderator')->pluck('id')->toArray();
+        $users = User::where('role', 'moderator')->pluck('id')->toArray();
         $cat = Category::pluck('id')->toArray();
-        
+
         return [
-            'title'=>fake()->text(64),
-            'description'=>fake()->text(200),
-            'content'=>fake()->paragraph(),
-            'image'=>fake()->imageUrl(),
-            'user_id'=>fake()->randomElement($users),
-            'category_id'=>fake()->randomElement($cat),
+            'title' => fake()->text(64),
+            'description' => fake()->text(200),
+            'content' => fake()->paragraph(),
+            'image' => fake()->imageUrl(),
+            'user_id' => fake()->randomElement($users),
+            'category_id' => fake()->randomElement($cat),
         ];
     }
 }
