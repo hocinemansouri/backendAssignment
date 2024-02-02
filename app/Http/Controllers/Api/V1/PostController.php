@@ -105,31 +105,6 @@ class PostController extends Controller
         ], 200);
     }
 
-    public function deletedPosts(Request $request)
-    {
-        if ($request->user()->role == 'admin') {
-            $trashedPosts = Post::onlyTrashed()->get();
-            return $trashedPosts;
-            if ($trashedPosts) {
-                return response()->json([
-                    'message' => 'trashed Posts are successfully fetched',
-                    'data' => $trashedPosts
-                ], 200);
-            } else {
-                return response()->json([
-                    'message' => 'trashed Posts not found'
-                ], 400);
-            }
-            return response()->json([
-                'message' => 'trashed Posts not found'
-            ], 400);
-        } else {
-            return response()->json([
-                'message' => 'Unauthorized access'
-            ], 403);
-        }
-    }
-
     public function details(Request $request, $id)
     {
         $post = Post::withCount('comments')->with(['user', 'category'])->where('id', $id)->first();
@@ -153,6 +128,31 @@ class PostController extends Controller
             return response()->json([
                 'message' => 'Posts not found'
             ], 400);
+        }
+    }
+
+    public function listDeletedPosts(Request $request)
+    {
+        if ($request->user()->role == 'admin') {
+            $trashedPosts = Post::onlyTrashed()->get();
+            return $trashedPosts;
+            if ($trashedPosts) {
+                return response()->json([
+                    'message' => 'trashed Posts are successfully fetched',
+                    'data' => $trashedPosts
+                ], 200);
+            } else {
+                return response()->json([
+                    'message' => 'trashed Posts not found'
+                ], 400);
+            }
+            return response()->json([
+                'message' => 'trashed Posts not found'
+            ], 400);
+        } else {
+            return response()->json([
+                'message' => 'Unauthorized access'
+            ], 403);
         }
     }
 
