@@ -25,62 +25,54 @@ use Illuminate\Support\Facades\Route;
 
 Route::group(['prefix' => 'v1'], function () {
     // Auth 
-    Route::post('auth/register',[AuthController::class, 'register']);
-    Route::post('auth/login',[AuthController::class, 'login']);
-    Route::middleware('auth:sanctum')->post('auth/logout',[AuthController::class, 'logout']);
-    Route::middleware('auth:sanctum')->get('auth/user', function (Request $request) {
-        return $request->user();
-    });
-
-    // PostCategories
+    Route::post('auth/register',[AuthController::class, 'register']); // user registration
+    Route::post('auth/login',[AuthController::class, 'login']); // user login
+    Route::middleware('auth:sanctum')->post('auth/logout',[AuthController::class, 'logout']); // user logout (currentAccessToken->delete)
+    Route::middleware('auth:sanctum')->get('auth/user', [AuthController::class, 'user']); // get current user info by token
+    
+    // add category
     Route::middleware('auth:sanctum')->post('category/create',[CategoryController::class,'create']);
     
-    // Post
-    // Post Create
+    // *****    Blog post    *****
+    // create  (authenticated only, admin or moderator only)
     Route::middleware('auth:sanctum')->post('post/create',[PostController::class, 'create']);
-    // Post List read by anyone
+    // select all (public access)
     Route::get('/post',[PostController::class, 'list']);
-    // Get single Post (public)
+    // select one (public access)
     Route::get('/post/{id}',[PostController::class, 'details']);
-    // Post Edit
+    // edit (authenticated only, admin or moderator only)
     Route::middleware('auth:sanctum')->put('post/{id}/update',[PostController::class, 'update']);
-    // Post Delete
+    // delete (authenticated only, admin or moderator only)
     Route::middleware('auth:sanctum')->delete('post/{id}/delete',[PostController::class, 'delete']);
-    // Restore deleted Post (Admin only)
+    // restore deleted post  (admin only)
     Route::middleware('auth:sanctum')->post('post/{id}/restorePost',[PostController::class, 'restorePost']);
     
     
-
-    // Comments
-    // Create (Authenticated only)
+    // *****    Comment    *****
+    // create (authenticated only)
     Route::middleware('auth:sanctum')->post('post/{post_id}/comments/create',[CommentController::class, 'create']);
-    // List all the comments of a post (public)
+    // select all (public access)
     Route::get('post/{post_id}/comments',[CommentController::class, 'list']);
-    // Update (Authenticated only)
+    // update (authenticated only)
     Route::middleware('auth:sanctum')->put('/comments/{comment_id}/update',[CommentController::class, 'update']);
-    // Delete (Authenticated only)
+    // delete (authenticated only)
     Route::middleware('auth:sanctum')->delete('/comments/{comment_id}/delete',[CommentController::class, 'delete']);
-    // Restore deleted Comment (Admin only)
+    // restore deleted comment (Admin only)
     Route::middleware('auth:sanctum')->post('/comments/{comment_id}/restoreComment',[CommentController::class, 'restoreComment']);
     
-    // Trash
-    // List deleted Posts (Only Admin)
+    // *****    Trash bin (admin only)    *****
+    // list deleted posts
     Route::middleware('auth:sanctum')->get('deleted/posts',[PostController::class, 'deletedPosts']);
-
-    // List deleted Comments (Only Admin)
+    // list deleted comments
     Route::middleware('auth:sanctum')->get('deleted/comments',[CommentController::class, 'deletedComments']);
 
-
-
-
-    // Likes
-    // Create (authenticated only)
+    // *****    Like    *****
+    // create (authenticated only)
     Route::middleware('auth:sanctum')->post('post/{post_id}/toggle-like',[PostController::class, 'toggle_like']);
 
-    // Profile
-    // Change password
+    // *****    Profile    *****
+    // change password  (authenticated only)
     Route::middleware('auth:sanctum')->post('profile/change-password',[ProfileController::class, 'change_password']);
-    // Update profile
+    // update
     Route::middleware('auth:sanctum')->post('profile/update-profile',[ProfileController::class, 'update_profile']);
-
 });
