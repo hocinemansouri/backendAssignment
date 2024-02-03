@@ -28,7 +28,8 @@ class UserSeeder extends Seeder
                     'address' => 'ZEO',
                     'city' => 'Biskra',
                     'state' => 'Biskra',
-                    'zip_code' => 'DZ-07012'
+                    'zip_code' => 'DZ-07012',
+                    'profile_photo' => 'https://ui-avatars.com/api/?size=0.7&name=Admin+Admin',
                 ],
                 [
                     'name' => 'Moderator',
@@ -41,7 +42,9 @@ class UserSeeder extends Seeder
                     'address' => '',
                     'city' => '',
                     'state' => '',
-                    'zip_code' => ''
+                    'zip_code' => '',
+                    'profile_photo' => 'https://ui-avatars.com/api/?size=0.7&name=Moderator+Moderator',
+
                 ],
                 [
                     'name' => 'User',
@@ -54,7 +57,9 @@ class UserSeeder extends Seeder
                     'address' => '',
                     'city' => '',
                     'state' => '',
-                    'zip_code' => ''
+                    'zip_code' => '',                    
+                    'profile_photo' => 'https://ui-avatars.com/api/?size=0.7&name=User+User',
+
                 ]
             ]
         );

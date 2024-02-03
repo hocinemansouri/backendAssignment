@@ -56,7 +56,7 @@ class PostController extends Controller
 
     public function list(Request $request)
     {
-        $post_query = Post::withCount(['comments', 'likes'])->with(['user:id,name,profile_photo', 'category:id,name']);
+        $post_query = Post::withCount(['comments', 'likes'])->with(['user:id,name,surname,profile_photo', 'category:id,name']);
 
         // Filter by
         // Title keyword
@@ -99,15 +99,19 @@ class PostController extends Controller
         } else {
             $posts = $post_query->orderBY($sortBy, $sortOrder)->get();
         }
-        return response()->json([
-            'message' => 'Posts are successfully fetched',
-            'data' => $posts
-        ], 200);
+        if($request->is('api/*')){
+            return response()->json([
+                'message' => 'Posts are successfully fetched',
+                'data' => $posts,
+            ], 200);}
+        else{
+            return view('/posts', ['data'=>$posts]);
+        }
     }
 
     public function details(Request $request, $id)
     {
-        $post = Post::withCount('comments')->with(['user', 'category'])->where('id', $id)->first();
+        $post = Post::withCount('comments')->with(['user', 'category', 'comments','likes'])->where('id', $id)->first();
         if ($post) {
             $user = auth('sanctum')->user();
             if ($user) {
@@ -120,10 +124,15 @@ class PostController extends Controller
             } else {
                 $post->liked_by_current_user = false;
             }
-            return response()->json([
-                'message' => 'Posts are successfully fetched',
-                'data' => $post
-            ], 200);
+
+            if($request->is('api/*')){
+                return response()->json([
+                    'message' => 'Posts are successfully fetched',
+                    'data' => $post
+                ], 200);
+            }else{
+                return view('/post', ['data'=>$post]);
+            }
         } else {
             return response()->json([
                 'message' => 'Posts not found'

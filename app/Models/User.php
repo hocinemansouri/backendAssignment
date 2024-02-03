@@ -41,7 +41,7 @@ class User extends Authenticatable
         if ($this->profile_photo) {
             return asset('/upload/profile_images/' . $this->profile_photo);
         } else {
-            return 'https://ui-avatars.com/api/?background=random&name=' . urlencode($this->name);
+            return 'https://ui-avatars.com/api/?size=0.7&name='.urlencode($this->name."+".$this->surname);
         }
     }
 

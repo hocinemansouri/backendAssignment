@@ -17,6 +17,7 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        $nbOfIter = 100;
         $this->call(UserSeeder::class);
         Category::factory(5)->create();
 
@@ -24,10 +25,11 @@ class DatabaseSeeder extends Seeder
         \App\Models\User::factory()
             ->count(10)
             ->create();
-
-        \App\Models\Post::factory()
-            ->count(100)
-            ->hasComments(50)
+        
+        for($i=0;$i<=$nbOfIter;$i++){
+            \App\Models\Post::factory()
+            ->has(Comment::factory()->count(rand(50,80)))
             ->create();
-    }
+        }
+        }
 }

@@ -39,7 +39,7 @@ class UserFactory extends Factory
             'city' => fake()->city(),
             'state' => fake()->state(),
             'zip_code' => fake()->postcode(),
-            'profile_photo' => fake()->imageUrl(60, 60),
+            'profile_photo' => 'https://ui-avatars.com/api/?size=0.7&name='.$fname."+".$lname,
             'remember_token' => Str::random(10),
         ];
     }
