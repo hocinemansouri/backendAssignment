@@ -111,11 +111,12 @@ class PostController extends Controller
 
     public function details(Request $request, $id)
     {
-        $post = Post::withCount('comments')->with(['user', 'category', 'comments','likes'])->where('id', $id)->first();
+        $post = Post::withCount('comments')->withCount('likes')->with(['user', 'category', 'comments','likes'])->where('id', $id)->first();
         if ($post) {
             $user = auth('sanctum')->user();
             if ($user) {
                 $post_like = PostLike::where('post_id', $post->id)->where('user_id', $user->id)->first();
+
                 if ($post_like) {
                     $post->liked_by_current_user = true;
                 } else {
@@ -128,10 +129,10 @@ class PostController extends Controller
             if($request->is('api/*')){
                 return response()->json([
                     'message' => 'Posts are successfully fetched',
-                    'data' => $post
+                    'data' => $post,
                 ], 200);
             }else{
-                return view('/post', ['data'=>$post]);
+                return view('/post', ['data'=>$post, 'comments'=>$post->comments()->paginate(5)]);
             }
         } else {
             return response()->json([
