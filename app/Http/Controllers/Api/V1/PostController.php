@@ -5,12 +5,14 @@ namespace App\Http\Controllers\Api\V1;
 use App\Http\Controllers\Controller;
 use App\Models\Post;
 use App\Models\PostLike;
+use Illuminate\Contracts\Session\Session;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
 
 class PostController extends Controller
 {
+
     public function create(Request $request)
     {
         if ($request->user()->role == 'moderator' || $request->user()->role == 'admin') {
@@ -99,21 +101,22 @@ class PostController extends Controller
         } else {
             $posts = $post_query->orderBY($sortBy, $sortOrder)->get();
         }
-        if($request->is('api/*')){
+        if ($request->is('api/*')) {
             return response()->json([
                 'message' => 'Posts are successfully fetched',
                 'data' => $posts,
-            ], 200);}
-        else{
-            return view('/posts', ['data'=>$posts]);
+            ], 200);
+        } else {
+            return view('/posts', ['data' => $posts]);
         }
     }
 
     public function details(Request $request, $id)
     {
-        $post = Post::withCount('comments')->withCount('likes')->with(['user', 'category', 'comments','likes'])->where('id', $id)->first();
+        $post = Post::withCount('comments')->withCount('likes')->with(['user', 'category', 'comments', 'likes'])->where('id', $id)->first();
         if ($post) {
-            $user = auth('sanctum')->user();
+
+            $user = $request->session()->get('user');
             if ($user) {
                 $post_like = PostLike::where('post_id', $post->id)->where('user_id', $user->id)->first();
 
@@ -126,13 +129,13 @@ class PostController extends Controller
                 $post->liked_by_current_user = false;
             }
 
-            if($request->is('api/*')){
+            if ($request->is('api/*')) {
                 return response()->json([
                     'message' => 'Posts are successfully fetched',
                     'data' => $post,
                 ], 200);
-            }else{
-                return view('/post', ['data'=>$post, 'comments'=>$post->comments()->paginate(5)]);
+            } else {
+                return view('/post', ['data' => $post, 'comments' => $post->comments()->paginate(5)]);
             }
         } else {
             return response()->json([
@@ -290,22 +293,30 @@ class PostController extends Controller
     {
         $post = Post::where('id', $post_id)->first();
         if ($post) {
-            $user = $request->user();
+            $user = $request->session()->get('user');
             $post_like = PostLike::where('post_id', $post->id)->where('user_id', $user->id)->first();
-
             if ($post_like) {
                 $post_like->delete();
-                return response()->json([
-                    'message' => 'Like succesfully removed'
-                ], 200);
+
+                if($request->is('api/*')){
+                    return response()->json([
+                        'message' => 'like deletes succesfully',
+                    ], 200);
+                }else{
+                    return back();
+                }
             } else {
                 PostLike::create([
                     'post_id' => $post->id,
                     'user_id' => $user->id
                 ]);
-                return response()->json([
-                    'message' => 'Post succesfully liked'
-                ], 200);
+                if($request->is('api/*')){
+                    return response()->json([
+                        'message' => 'like created succesfully',
+                    ], 200);
+                }else{
+                    return back();
+                }
             }
         } else {
             return response()->json([

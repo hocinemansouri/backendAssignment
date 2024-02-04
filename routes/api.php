@@ -28,7 +28,7 @@ Route::group(['prefix' => 'v1'],  function () {
     Route::middleware('auth:sanctum')->post('auth/logout', [AuthController::class, 'logout']);
     // get current user info by token 
     Route::middleware('auth:sanctum')->get('auth/user', [AuthController::class, 'user']); 
-
+    
     // add category
     Route::middleware('auth:sanctum')->post('category/create', [CategoryController::class, 'create']);
 

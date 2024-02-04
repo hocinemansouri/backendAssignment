@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use App\Models\User;
+use App\Models\Category;
 use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
@@ -61,7 +62,6 @@ class AuthController extends Controller
 
     public function login(Request $request)
     {
-
         $validator = Validator::make($request->all(), [
             'email' => 'required|email',
             'password' => 'required',
@@ -72,17 +72,23 @@ class AuthController extends Controller
                 'error' => $validator->errors(),
             ], 422);
         }
-
         $user = User::where('email', $request->email)->first();
-
         if ($user) {
             if (Hash::check($request->password, $user->password)) {
                 $token = $user->createToken('auth-token')->plainTextToken;
-                return response()->json([
-                    'message' => 'loggin succesful',
-                    'token' => $token,
-                    'data' => $user
-                ], 200);
+                if($request->is('api/*')){
+                    return response()->json([
+                        'message' => 'You\'re logged in succesfully',
+                        'token' => $token,
+                        'user' => $user
+                    ], 200);
+                }else{
+                    $request->session()->put('user', $user);
+                    $request->session()->put('categories', Category::all()->unique());
+                    return redirect()
+                        ->intended('/posts');
+                }
+
             } else {
                 return response()->json([
                     'message' => 'Incorrect credentials'
@@ -93,9 +99,6 @@ class AuthController extends Controller
                 'message' => 'Incorrect credentials'
             ], 400);
         }
-        return response()->json([
-            'message' => 'logging'
-        ]);
     }
 
     public function user(Request $request)
@@ -108,9 +111,19 @@ class AuthController extends Controller
 
     public function logout(Request $request)
     {
-        $request->user()->currentAccessToken()->delete();
-        return response()->json([
-            'message' => 'User logged out succesfully',
-        ], 200);
+        //Auth::guard('web')->logout();
+        $request->session()->invalidate(); 
+        $request->session()->regenerateToken(); 
+        
+        if($request->is('api/*')){
+            return response()->json([
+                'message' => 'User logged out succesfully',
+            ], 200);
+        }else{
+            $request->session()->flush();
+            $request->session()->forget('user', $request->user());
+            auth()->logout();
+            return redirect('/posts');
+        }
     }
 }

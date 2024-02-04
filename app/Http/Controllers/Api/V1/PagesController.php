@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\V1;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 
 class PagesController extends Controller
 {
@@ -17,4 +18,6 @@ class PagesController extends Controller
     function signup(){
         return view('signup');
     }
+
+    
 }
