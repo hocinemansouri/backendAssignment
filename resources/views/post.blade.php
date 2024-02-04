@@ -36,8 +36,9 @@ $userRole = $user->role??'';
                 <h1 class="mb-4 text-3xl font-extrabold leading-tight text-gray-900 lg:mb-6 lg:text-4xl ">{{ $data['title']}}</h1>
             </header>
             <br />
-            <figure><img src="{{ $data['image']}}" alt="">
-                <figcaption>Digital art by Anonymous</figcaption>
+            <?php $image = str_contains($data['image'],'http') ? $data['image'] : $data['image_url']; ?>
+            <figure><img src="{{ $image }}" alt="">
+                <figcaption>Digital art</figcaption>
             </figure>
             <br />
             <p class="lead">
@@ -48,11 +49,12 @@ $userRole = $user->role??'';
                 <div class="flex justify-between items-center mb-6">
                     <h2 class="text-lg lg:text-2xl font-bold text-gray-900 ">Discussion ({{ $data['comments_count']}})</h2>
                 </div>
-                @if(auth()->user())
-                <form class="mb-6">
+                @if($user)
+                <form class="mb-6"  action="{{$data['id']}}/comments/create" method="post" >
+                @csrf
                     <div class="py-2 px-4 mb-4 bg-white rounded-lg rounded-t-lg border border-gray-200 ">
                         <label for="comment" class="sr-only">Your comment</label>
-                        <textarea id="comment" rows="6" class="px-0 w-full text-sm text-gray-900 border-0 focus:ring-0 " placeholder="Write a comment..." required></textarea>
+                        <textarea name="content" id="comment" rows="6" class="px-0 w-full text-sm text-gray-900 border-0 focus:ring-0 " placeholder="Write a comment..." required></textarea>
                     </div>
                     <button type="submit" class="inline-flex items-center py-2.5 px-4 text-xs font-medium text-center text-white bg-black rounded-lg focus:ring-4 focus:ring-primary-200 dark:focus:ring-primary-900 hover:bg-primary-800">
                         Post comment

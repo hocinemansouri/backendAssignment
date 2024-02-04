@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\V1\AuthController;
+use App\Http\Controllers\Api\V1\CommentController;
 use App\Http\Controllers\Api\V1\PagesController;
 use App\Http\Controllers\Api\V1\PostController;
 use App\Http\Controllers\Api\V1\ProfileController;
@@ -16,5 +17,7 @@ Route::view('/signin', 'signin');
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 Route::get('/post/{post_id}/toggleLike', [PostController::class, 'toggle_like'])->name('toggleLike');
+Route::post('/post/{post_id}/comments/create', [CommentController::class, 'create']);
+Route::post('/post/create', [PostController::class, 'create']);
 Route::view('/signup', 'signup');
 Route::get('/post/{id}', [PostController::class, 'details']);

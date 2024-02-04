@@ -12,7 +12,9 @@ class CommentController extends Controller
 {
     public function create(Request $request, $post_id)
     {
-        $post = Post::where('id', $post_id)->first();
+        $user = $request->session()->get('user');
+        if($user){
+            $post = Post::where('id', $post_id)->first();
 
         if ($post) {
             $validator = Validator::make($request->all(), [
@@ -24,22 +26,28 @@ class CommentController extends Controller
                     'errors' => $validator->errors()
                 ], 422);
             }
-
             $comment = Comment::create([
                 'content' => $request->content,
                 'post_id' => $post->id,
-                'user_id' => $request->user()->id
+                'user_id' => $user->id
             ]);
             $comment->load('user');
-            return response()->json([
-                'message' => 'Comment added succesfully',
-                'content' => $comment
-            ], 200);
+            if($request->is('api/*')){
+                return response()->json([
+                    'message' => 'Comment added succesfully',
+                    'content' => $comment
+                ], 200);
+            }else{
+                return redirect()->back();
+            }
+            
         } else {
             return response()->json([
                 'message' => 'Post not found'
             ], 422);
         }
+        }
+        
     }
 
     public function list(Request $request, $post_id)

@@ -15,7 +15,8 @@ class PostController extends Controller
 
     public function create(Request $request)
     {
-        if ($request->user()->role == 'moderator' || $request->user()->role == 'admin') {
+        $user = $request->session()->get('user');
+        if ($user->role == 'moderator' || $user->role == 'admin') {
             $validator = Validator::make($request->all(), [
                 'title' => 'required|max:64',
                 'description' => 'required',
@@ -25,10 +26,14 @@ class PostController extends Controller
             ]);
 
             if ($validator->fails()) {
-                return response()->json([
-                    'message' => 'Validation errors',
-                    'errors' => $validator->messages()
-                ], 422);
+                if($request->is('api/*')){
+                    return response()->json([
+                        'message' => 'Validation errors',
+                        'errors' => $validator->messages()
+                    ], 422);
+                }else{
+                    return $validator->messages();
+                }
             }
 
             $image_name = time() . '.' . $request->image->extension();
@@ -40,15 +45,21 @@ class PostController extends Controller
                     'description' => $request->description,
                     'content' => $request->content,
                     'image' => $image_name,
-                    'user_id' => $request->user()->id,
+                    'user_id' => $user->id,
                     'category_id' => $request->category_id,
                 ]
             );
             $post->load('user:id,name,email', 'category:id,name');
-            return response()->json([
-                'message' => 'Post succesfully created',
-                'data' => $post
-            ], 200);
+            
+            if($request->is('api/*')){
+                return response()->json([
+                    'message' => 'Post succesfully created',
+                    'data' => $post
+                ], 200);
+            }else{
+                return back();
+            }
+
         } else {
             return response()->json([
                 'message' => 'Unauthorized access'
@@ -115,8 +126,10 @@ class PostController extends Controller
     {
         $post = Post::withCount('comments')->withCount('likes')->with(['user', 'category', 'comments', 'likes'])->where('id', $id)->first();
         if ($post) {
-
-            $user = $request->session()->get('user');
+            $user = null;
+            if(!$request->is('api/*')){
+                $user = $request->session()->get('user');
+            }
             if ($user) {
                 $post_like = PostLike::where('post_id', $post->id)->where('user_id', $user->id)->first();
 
