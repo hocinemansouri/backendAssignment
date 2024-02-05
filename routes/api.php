@@ -38,7 +38,7 @@ Route::group(['prefix' => 'v1'],  function () {
     // select all (public access)
     Route::get('/post', [PostController::class, 'list']);
     // select one (public access)
-    Route::get('/post/{id}', [PostController::class, 'details']);
+    Route::middleware('auth:sanctum')->get('/post/{id}', [PostController::class, 'details']);
     // edit (authenticated only, admin or moderator only)
     Route::middleware('auth:sanctum')->put('post/{id}/update', [PostController::class, 'update']);
     // delete (authenticated only, admin or moderator only)

@@ -128,7 +128,7 @@ class PostController extends Controller
     {
         $post = Post::withCount('comments')->withCount('postlikes')->with(['user', 'category', 'comments', 'postlikes'])->where('id', $id)->first();
         if ($post) {
-            $user = auth()->user();
+            $user=auth()->user();
             if (!$request->is('api/*')) {
                 $user = $request->session()->get('user');
             }
