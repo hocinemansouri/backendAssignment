@@ -5,14 +5,14 @@ $userRole = $user->role??'';
 @extends('layout')
 
 @section('content')
-
+<?php $imageUser = str_contains($data['user']['profile_photo'],'http') ? $data['user']['profile_photo'] : $data['user']['profile_image_url']; ?>
 <main class="pt-8 pb-16 lg:pt-16 lg:pb-24 bg-white antialiased">
     <div class="flex justify-between px-4 mx-auto max-w-screen-xl ">
         <article class="mx-auto w-full max-w-2xl format format-sm sm:format-base lg:format-lg format-blue dark:format-invert">
             <header class="mb-4 lg:mb-6 not-format">
                 <address class="flex justify-between items-center mb-6 not-italic">
                     <div class="inline-flex items-center mr-3 text-sm text-gray-900 ">
-                        <img class="mr-4 w-16 h-16 rounded-full" src="{{ $data['user']['profile_photo'] }}" alt="Jese Leos">
+                        <img class="mr-4 w-16 h-16 rounded-full" src="{{ $imageUser }}" alt="Jese Leos">
                         <div>
                             <a href="#" rel="author" class="text-xl font-bold text-gray-900 ">{{ $data['user']['name']." ".$data['user']['surname']}}</a>
                             <p class="text-base text-gray-500 dark:text-gray-400"><time pubdate datetime="2022-02-08" title="February 8th, 2022">{{ $data['human_readable_created_at'] }}</time></p>
@@ -65,7 +65,8 @@ $userRole = $user->role??'';
                 <article class="p-6 mb-2 text-base bg-white rounded-lg ">
                     <footer class="flex justify-between items-center mb-2">
                         <div class="flex items-center">
-                            <p class="inline-flex items-center mr-3 font-semibold text-sm text-gray-900 "><img class="mr-2 w-6 h-6 rounded-full" src="{{ $comment['user']['profile_photo'] }}" alt="{{ $comment['user']['name'].' '.$comment['user']['surname'] }}">{{ $comment['user']['name']." ".$comment['user']['surname'] }} </p>
+                        <?php $commentUserImage = str_contains($comment['user']['profile_photo'],'http') ? $comment['user']['profile_photo'] : $comment['user']['profile_image_url']; ?>
+                            <p class="inline-flex items-center mr-3 font-semibold text-sm text-gray-900 "><img class="mr-2 w-6 h-6 rounded-full" src="{{ $commentUserImage }}" alt="{{ $comment['user']['name'].' '.$comment['user']['surname'] }}">{{ $comment['user']['name']." ".$comment['user']['surname'] }} </p>
                             <p class="text-sm text-gray-600 dark:text-gray-400"><time pubdate datetime="2022-02-08" title="February 8th, 2022">{{ $comment['human_readable_created_at'] }}</time></p>
                         </div>
                         <button id="dropdownComment1Button" data-dropdown-toggle="dropdownComment1" class="inline-flex items-center p-2 text-sm font-medium text-center text-gray-500 bg-white rounded-lg hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-50 " type="button">

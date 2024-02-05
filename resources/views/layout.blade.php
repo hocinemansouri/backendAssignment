@@ -43,10 +43,12 @@ $userRole = $user->role??'';
             <div class="relative ml-3">
               <div>
                 @if($user)
+                <?php $imageUser = str_contains($user->profile_photo,'http') ? $user->profile_photo : $user->profile_image_url; ?>
+
                 <button id="dropdownDefaultButton" data-dropdown-toggle="dropdownMenu" type="button" class=" relative flex rounded-full bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800" aria-expanded="false" aria-haspopup="true">
                   <span class="absolute -inset-1.5"></span>
                   <span class="sr-only">Open user menu</span>
-                  <img class="h-8 w-8 rounded-full" src="{{ $user->profile_photo }}" alt="">
+                  <img class="h-8 w-8 rounded-full" src="{{ $imageUser }}" alt="">
                 </button>
                 @endif
               </div>

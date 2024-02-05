@@ -38,7 +38,7 @@
                         </span>
                         <span class="text-sm">{{$row['human_readable_created_at']}}</span>
                     </div>
-                    <h2 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 "><a href="#">{{$row['title']}}</a></h2>
+                    <h2 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 "><a href="/post/{{$row['id']}}">{{$row['title']}}</a></h2>
                     <p class="mb-5 font-light text-gray-500 ">{{$row['description']}}</p>
                     <div class="flex justify-start items-center mb-3">
                     <div class="flex justify-between w-12">

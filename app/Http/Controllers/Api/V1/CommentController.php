@@ -12,7 +12,10 @@ class CommentController extends Controller
 {
     public function create(Request $request, $post_id)
     {
-        $user = $request->session()->get('user');
+        $user = auth()->user();
+        if (!$request->is('api/*')) {
+            $user = $request->session()->get('user');
+        }
         if($user){
             $post = Post::where('id', $post_id)->first();
 
@@ -21,10 +24,14 @@ class CommentController extends Controller
                 'content' => 'required'
             ]);
             if ($validator->fails()) {
-                return response()->json([
-                    'message' => 'Validation errors',
-                    'errors' => $validator->errors()
-                ], 422);
+                if ($request->is('api/*')) {
+                    return response()->json([
+                        'message' => 'Validation errors',
+                        'errors' => $validator->messages()
+                    ], 422);
+                } else {
+                    return $validator->messages();
+                }
             }
             $comment = Comment::create([
                 'content' => $request->content,
@@ -76,10 +83,14 @@ class CommentController extends Controller
                     'content' => 'required'
                 ]);
                 if ($validator->fails()) {
-                    return response()->json([
-                        'message' => 'Validation errors',
-                        'errors' => $validator->errors()
-                    ], 422);
+                    if ($request->is('api/*')) {
+                        return response()->json([
+                            'message' => 'Validation errors',
+                            'errors' => $validator->messages()
+                        ], 422);
+                    } else {
+                        return $validator->messages();
+                    }
                 }
                 $comment->update([
                     'content' => $request->content

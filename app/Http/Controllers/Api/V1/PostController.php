@@ -15,7 +15,10 @@ class PostController extends Controller
 
     public function create(Request $request)
     {
-        $user = $request->session()->get('user');
+        $user = auth()->user();
+        if (!$request->is('api/*')) {
+            $user = $request->session()->get('user');
+        }
         if ($user->role == 'moderator' || $user->role == 'admin') {
             $validator = Validator::make($request->all(), [
                 'title' => 'required|max:64',
@@ -26,12 +29,12 @@ class PostController extends Controller
             ]);
 
             if ($validator->fails()) {
-                if($request->is('api/*')){
+                if ($request->is('api/*')) {
                     return response()->json([
                         'message' => 'Validation errors',
-                        'errors' => $validator->messages()
+                        'errors' => $validator->errors()
                     ], 422);
-                }else{
+                } else {
                     return $validator->messages();
                 }
             }
@@ -50,16 +53,15 @@ class PostController extends Controller
                 ]
             );
             $post->load('user:id,name,email', 'category:id,name');
-            
-            if($request->is('api/*')){
+
+            if ($request->is('api/*')) {
                 return response()->json([
                     'message' => 'Post succesfully created',
                     'data' => $post
                 ], 200);
-            }else{
+            } else {
                 return back();
             }
-
         } else {
             return response()->json([
                 'message' => 'Unauthorized access'
@@ -124,10 +126,12 @@ class PostController extends Controller
 
     public function details(Request $request, $id)
     {
-        $post = Post::withCount('comments')->withCount('likes')->with(['user', 'category', 'comments', 'likes'])->where('id', $id)->first();
+        $post = Post::withCount('comments')->withCount('likes')->with(['user', 'category', 'comments' => function ($q) {
+            $q->orderBy('id', 'asc');
+        }, 'likes'])->where('id', $id)->first();
         if ($post) {
-            $user = null;
-            if(!$request->is('api/*')){
+            $user = auth()->user();
+            if (!$request->is('api/*')) {
                 $user = $request->session()->get('user');
             }
             if ($user) {
@@ -198,10 +202,14 @@ class PostController extends Controller
                     ]);
 
                     if ($validator->fails()) {
-                        return response()->json([
-                            'message' => 'Validation errors',
-                            'errors' => $validator->messages()
-                        ], 422);
+                        if ($request->is('api/*')) {
+                            return response()->json([
+                                'message' => 'Validation errors',
+                                'errors' => $validator->errors()
+                            ], 422);
+                        } else {
+                            return $validator->messages();
+                        }
                     }
                     if ($request->hasFile('image')) {
                         $image_name = time() . '.' . $request->image->extension();
@@ -306,16 +314,19 @@ class PostController extends Controller
     {
         $post = Post::where('id', $post_id)->first();
         if ($post) {
-            $user = $request->session()->get('user');
+            $user = auth()->user();
+            if (!$request->is('api/*')) {
+                $user = $request->session()->get('user');
+            }
             $post_like = PostLike::where('post_id', $post->id)->where('user_id', $user->id)->first();
             if ($post_like) {
                 $post_like->delete();
 
-                if($request->is('api/*')){
+                if ($request->is('api/*')) {
                     return response()->json([
                         'message' => 'like deletes succesfully',
                     ], 200);
-                }else{
+                } else {
                     return back();
                 }
             } else {
@@ -323,11 +334,11 @@ class PostController extends Controller
                     'post_id' => $post->id,
                     'user_id' => $user->id
                 ]);
-                if($request->is('api/*')){
+                if ($request->is('api/*')) {
                     return response()->json([
                         'message' => 'like created succesfully',
                     ], 200);
-                }else{
+                } else {
                     return back();
                 }
             }

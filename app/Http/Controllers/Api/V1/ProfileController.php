@@ -24,10 +24,14 @@ class ProfileController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json([
-                'message' => 'Validation failed',
-                'error' => $validator->errors(),
-            ], 422);
+            if ($request->is('api/*')) {
+                return response()->json([
+                    'message' => 'Validation failed',
+                    'errors' => $validator->errors(),
+                ], 422);
+            } else {
+                return $validator->messages();
+            }
         }
 
         $user = $request->user();
@@ -51,10 +55,14 @@ class ProfileController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json([
-                'message' => 'Validation failed',
-                'error' => $validator->errors(),
-            ], 422);
+            if ($request->is('api/*')) {
+                return response()->json([
+                    'message' => 'Validation failed',
+                    'errors' => $validator->errors(),
+                ], 422);
+            } else {
+                return $validator->messages();
+            }
         }
 
         $user = $request->user();
