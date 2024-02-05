@@ -30,10 +30,14 @@ class AuthController extends Controller
 
         ]);
         if ($validator->fails()) {
-            return response()->json([
-                'message' => 'Validation failed',
-                'error' => $validator->errors(),
-            ], 422);
+            if ($request->is('api/*')) {
+                return response()->json([
+                    'message' => 'Validation failed',
+                    'errors' => $validator->errors(),
+                ], 422);
+            } else {
+                return $validator->messages();
+            }
         }
         $fname = $request->name;
         $lname = $request->surname;
@@ -67,10 +71,14 @@ class AuthController extends Controller
             'password' => 'required',
         ]);
         if ($validator->fails()) {
-            return response()->json([
-                'message' => 'Login failed',
-                'error' => $validator->errors(),
-            ], 422);
+            if ($request->is('api/*')) {
+                return response()->json([
+                    'message' => 'Login failed',
+                    'errors' => $validator->errors(),
+                ], 422);
+            } else {
+                return $validator->messages();
+            }
         }
         $user = User::where('email', $request->email)->first();
         if ($user) {

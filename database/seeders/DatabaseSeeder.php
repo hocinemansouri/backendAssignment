@@ -29,6 +29,7 @@ class DatabaseSeeder extends Seeder
         for($i=0;$i<=$nbOfIter;$i++){
             \App\Models\Post::factory()
             ->has(Comment::factory()->count(rand(50,80)))
+            ->has(PostLike::factory()->count(rand(20,200)))
             ->create();
         }
         }

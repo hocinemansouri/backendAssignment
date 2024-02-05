@@ -40,7 +40,7 @@ class Post extends Model
         return $this->hasMany(Comment::class)->orderBy('id', 'desc');
     }
 
-    public function likes()
+    public function postlikes()
     {
         return $this->hasMany(PostLike::class);
     }
