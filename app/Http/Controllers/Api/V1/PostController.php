@@ -71,7 +71,7 @@ class PostController extends Controller
 
     public function list(Request $request)
     {
-        $post_query = Post::withCount(['comments', 'likes'])->with(['user:id,name,surname,profile_photo', 'category:id,name']);
+        $post_query = Post::withCount(['comments', 'postlikes'])->with(['user:id,name,surname,profile_photo', 'category:id,name']);
 
         // Filter by
         // Title keyword
@@ -90,7 +90,7 @@ class PostController extends Controller
         }
         // Sorting
         // By
-        if ($request->sortBy && in_array($request->sortBy, ['id', 'created_at', 'comments_count', 'likes_count'])) {
+        if ($request->sortBy && in_array($request->sortBy, ['id', 'created_at', 'comments_count', 'postlikes_count'])) {
             $sortBy = $request->sortBy;
         } else {
             $sortBy = 'comments_count';
@@ -126,9 +126,7 @@ class PostController extends Controller
 
     public function details(Request $request, $id)
     {
-        $post = Post::withCount('comments')->withCount('likes')->with(['user', 'category', 'comments' => function ($q) {
-            $q->orderBy('id', 'asc');
-        }, 'likes'])->where('id', $id)->first();
+        $post = Post::withCount('comments')->withCount('postlikes')->with(['user', 'category', 'comments', 'postlikes'])->where('id', $id)->first();
         if ($post) {
             $user = auth()->user();
             if (!$request->is('api/*')) {
@@ -136,7 +134,6 @@ class PostController extends Controller
             }
             if ($user) {
                 $post_like = PostLike::where('post_id', $post->id)->where('user_id', $user->id)->first();
-
                 if ($post_like) {
                     $post->liked_by_current_user = true;
                 } else {
