@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Services\ProfileImageService;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -31,18 +31,16 @@ class User extends Authenticatable
         'city',
         'state',
         'zip_code',
-
     ];
     public $appends = [
         'profile_image_url',
     ];
+
     public function getProfileImageUrlAttribute()
     {
-        if ($this->profile_photo) {
-            return asset('/upload/profile_images/' . $this->profile_photo);
-        } else {
-            return 'https://ui-avatars.com/api/?size=0.7&name='.urlencode($this->name."+".$this->surname);
-        }
+        $profileImageService = app(ProfileImageService::class);
+
+        return $profileImageService->getProfileImageUrl($this);
     }
 
     public function posts()

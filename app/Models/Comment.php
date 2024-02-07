@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Services\HumanReadableCreatedAtService;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -31,6 +32,8 @@ class Comment extends Model
 
     public function getHumanReadableCreatedAtAttribute()
     {
-        return $this->created_at->diffForHumans();
+        $humanReadableCreatedAtService = app(HumanReadableCreatedAtService::class);
+
+        return $humanReadableCreatedAtService->getHumanReadableCreatedAtAttribute($this);
     }
 }

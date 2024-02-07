@@ -1,7 +1,9 @@
 @php
 $user = Session::get('user');
-$categories = Session::get('categories');
+
 $userRole = $user->role??'';
+
+$categories =  isset($categories) ? $categories : null;
 @endphp
 <!DOCTYPE html>
 <html lang="en">
@@ -54,8 +56,8 @@ $userRole = $user->role??'';
               </div>
               <div id="dropdownMenu" class="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700" role="menu" aria-orientation="vertical" aria-labelledby="user-menu-button" tabindex="-1">
                 <!-- Active: "bg-gray-100", Not Active: "" -->
-                <a href="#" class="block px-4 py-2 hover:bg-gray-100 text-sm text-gray-700" role="menuitem" tabindex="-1" id="user-menu-item-0">Your Profile</a>
-                <a href="#" class="block px-4 py-2 hover:bg-gray-100 text-sm text-gray-700" role="menuitem" tabindex="-1" id="user-menu-item-1">Settings</a>
+                <a href="/updateprofile" class="block px-4 py-2 hover:bg-gray-100 text-sm text-gray-700" role="menuitem" tabindex="-1" id="user-menu-item-0">Your Profile</a>
+                @if(in_array($userRole,['admin']))<a href="/deletedposts" class="block px-4 py-2 hover:bg-gray-100 text-sm text-gray-700" role="menuitem" tabindex="-1" id="user-menu-item-1">Deleted posts</a>@endif
                 <a href="{{ route('logout') }}" class="block px-4 py-2 hover:bg-gray-100 text-sm text-gray-700" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                   Logout
                 </a>

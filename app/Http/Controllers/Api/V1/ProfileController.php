@@ -3,40 +3,32 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
+use App\Http\Requests\User\ChangePasswordRequest;
+use App\Http\Requests\User\UpdateUserRequest;
+use App\Repositories\Contracts\UserRepositoryInterface;
+use App\Services\AuthenticationService;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Validator;
-use Symfony\Component\HttpKernel\Profiler\Profile;
 
 class ProfileController extends Controller
 {
-    function index(){
+    protected $userRepository;
+
+    public function __construct(UserRepositoryInterface $userRepository)
+    {
+        $this->userRepository = $userRepository;
+    }
+    
+    function index()
+    {
         return view('profile');
     }
 
-    public function change_password(Request $request)
+    public function change_password(ChangePasswordRequest $request,AuthenticationService $auth)
     {
-        $validator = Validator::make($request->all(), [
-            'old_password' => 'required',
-            'password' => 'required|min:6|max:100',
-            'confirm_password' => 'required|same:password'
-        ]);
-
-        if ($validator->fails()) {
-            if ($request->is('api/*')) {
-                return response()->json([
-                    'message' => 'Validation failed',
-                    'errors' => $validator->errors(),
-                ], 422);
-            } else {
-                return $validator->messages();
-            }
-        }
-
-        $user = $request->user();
+        $user = $auth->getUserIfAuthenticated($request);
         if (Hash::check($request->old_password, $user->password)) {
-            $user->update(['password' => Hash::make($request->password)]);
+            $this->userRepository->update($user,['password' => Hash::make($request->password)]);
             return response()->json([
                 'message' => 'Password changed succesfully',
             ], 200);
@@ -47,25 +39,9 @@ class ProfileController extends Controller
         }
     }
 
-    public function update_profile(Request $request)
+    public function update_profile(UpdateUserRequest $request,AuthenticationService $auth)
     {
-        $validator = Validator::make($request->all(), [
-            'name' => 'required|min:2|max:100',
-            'profile_photo' => 'nullable|image|mimes:jpg,jpeg,png',
-        ]);
-
-        if ($validator->fails()) {
-            if ($request->is('api/*')) {
-                return response()->json([
-                    'message' => 'Validation failed',
-                    'errors' => $validator->errors(),
-                ], 422);
-            } else {
-                return $validator->messages();
-            }
-        }
-
-        $user = $request->user();
+        $user = $auth->getUserIfAuthenticated($request);
 
         if ($request->hasFile('profile_photo')) {
             if ($user->profile_photo) {
@@ -79,13 +55,27 @@ class ProfileController extends Controller
         } else {
             $image_name = $user->profile_photo;
         }
-
-        $user->update([
+        $username = strtolower($request->surname . (substr($request->name, 0, 3)));
+        $this->userRepository->update($user,[
             'name' => $request->name,
-            'profile_photo' => $image_name
+            'surname' => $request->surname,
+            'username' => $username,
+            'nickname' => $request->nickname,
+            'phone' => $request->phone,
+            'address' => $request->address,
+            'city' => $request->city,
+            'state' => $request->state,
+            'zip_code' => $request->zip_code,
+            'profile_photo' => $image_name,
+            
         ]);
-        return response()->json([
-            'message' => 'Profile updated succesfully',
-        ], 200);
+        if ($request->is('api/*')) {
+            return response()->json([
+                'message' => 'Profile updated succesfully',
+                'user' => $user
+            ], 200);
+        } else {
+            return view('/updateprofile',['isClicked'=>true]);
+        }
     }
 }

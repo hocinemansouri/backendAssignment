@@ -4,8 +4,9 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Models\Category;
+use App\Services\HumanReadableCreatedAtService;
+use App\Services\PostImageUrlAttributeService;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Prunable;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Post extends Model
@@ -47,10 +48,15 @@ class Post extends Model
 
     public function getImageUrlAttribute()
     {
-        return asset('/upload/blog_images/' . $this->image);
+        $ImageUrlAttributeService = app(PostImageUrlAttributeService::class);
+
+        return $ImageUrlAttributeService->getImageUrlAttribute($this);
     }
+
     public function getHumanReadableCreatedAtAttribute()
     {
-        return $this->created_at->diffForHumans();
+        $humanReadableCreatedAtService = app(HumanReadableCreatedAtService::class);
+
+        return $humanReadableCreatedAtService->getHumanReadableCreatedAtAttribute($this);
     }
 }

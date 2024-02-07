@@ -81,7 +81,14 @@
                     @endforeach
 
                 @endfor
+                
         </div>
+        
     </div>
+    <div class="flex justify-center">
+                    @if ($data)
+                    {{ $data->links() }}
+                    @endif
+                </div>
 </section>
 @stop

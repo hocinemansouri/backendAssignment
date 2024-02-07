@@ -1,10 +1,10 @@
 <?php
 
-use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\CategoryController;
 use App\Http\Controllers\Api\V1\CommentController;
 use App\Http\Controllers\Api\V1\PostController;
 use App\Http\Controllers\Api\V1\ProfileController;
+use App\Http\Controllers\Api\V1\UserController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -19,59 +19,47 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::group(['prefix' => 'v1'],  function () {
-    // *****    User Auth    *****
-    // user registration
-    Route::post('auth/register', [AuthController::class,'register']);
-    // user login 
-    Route::post('auth/login', [AuthController::class,'login']); 
-    // user logout (currentAccessToken->delete)
-    Route::middleware('auth:sanctum')->post('auth/logout', [AuthController::class, 'logout']);
-    // get current user info by token 
-    Route::middleware('auth:sanctum')->get('auth/user', [AuthController::class, 'user']); 
+    // User Auth Apis
+    Route::post('auth/register', [UserController::class,'register']);
+    Route::post('auth/login', [UserController::class,'login']); 
+    Route::middleware('auth:sanctum')->post('auth/logout', [UserController::class, 'logout']);
+    Route::middleware('auth:sanctum')->get('auth/user', [UserController::class, 'user']); 
     
-    // add category
+    // Category Apis
     Route::middleware('auth:sanctum')->post('category/create', [CategoryController::class, 'create']);
+    Route::middleware('auth:sanctum')->get('category', [CategoryController::class, 'index']);
+    Route::middleware('auth:sanctum')->get('category/{id}', [CategoryController::class, 'getById']);
+    Route::middleware('auth:sanctum')->delete('category/{category_id}/delete', [CategoryController::class, 'delete']);
+    Route::middleware('auth:sanctum')->put('category/{category_id}/update', [CategoryController::class, 'update']);
 
-    // *****    Blog post    *****
-    // create  (authenticated only, admin or moderator only)
+    // Post Apis
     Route::middleware('auth:sanctum')->post('post/create', [PostController::class, 'create']);
-    // select all (public access)
     Route::get('/post', [PostController::class, 'list']);
-    // select one (public access)
     Route::middleware('auth:sanctum')->get('/post/{id}', [PostController::class, 'details']);
-    // edit (authenticated only, admin or moderator only)
     Route::middleware('auth:sanctum')->put('post/{id}/update', [PostController::class, 'update']);
-    // delete (authenticated only, admin or moderator only)
     Route::middleware('auth:sanctum')->delete('post/{id}/delete', [PostController::class, 'delete']);
-    // restore deleted post  (admin only)
-    Route::middleware('auth:sanctum')->post('post/{id}/restorePost', [PostController::class, 'restorePost']);
-
-
-    // *****    Comment    *****
-    // create (authenticated only)
+    
+    
+    Route::get('/showuser/{userId}', [UserController::class, 'showUserProfile']);
+    
+    // Comment Apis
     Route::middleware('auth:sanctum')->post('post/{post_id}/comments/create', [CommentController::class, 'create']);
-    // select all (public access)
     Route::get('post/{post_id}/comments', [CommentController::class, 'list']);
-    // update (authenticated only)
     Route::middleware('auth:sanctum')->put('/comments/{comment_id}/update', [CommentController::class, 'update']);
-    // delete (authenticated only)
     Route::middleware('auth:sanctum')->delete('/comments/{comment_id}/delete', [CommentController::class, 'delete']);
-    // restore deleted comment (Admin only)
     Route::middleware('auth:sanctum')->post('/comments/{comment_id}/restoreComment', [CommentController::class, 'restoreComment']);
 
-    // *****    Trash bin (admin only)    *****
-    // list deleted posts
-    Route::middleware('auth:sanctum')->get('deleted/posts', [PostController::class, 'listDeletedPosts']);
-    // list deleted comments
+    // Trash bin Apis
     Route::middleware('auth:sanctum')->get('deleted/comments', [CommentController::class, 'deletedComments']);
+    //Route::middleware('auth:sanctum')->post('post/{id}/restorePost', [PostController::class, 'restorePost']);
+    Route::middleware('auth:sanctum')->post('comment/{id}/restoreComment', [CommentController::class, 'restoreComment']);
+    Route::middleware('auth:sanctum')->get('/deletedposts', [PostController::class, 'listDeletedPosts']);
 
-    // *****    Like    *****
-    // create (authenticated only)
+    // Like Apis
     Route::middleware('auth:sanctum')->post('post/{post_id}/toggle-like', [PostController::class, 'toggle_like']);
 
-    // *****    Profile    *****
-    // change password  (authenticated only)
+    // Profile Apis
     Route::middleware('auth:sanctum')->post('profile/change-password', [ProfileController::class, 'change_password']);
-    // update
     Route::middleware('auth:sanctum')->post('profile/update-profile', [ProfileController::class, 'update_profile']);
 });
+
